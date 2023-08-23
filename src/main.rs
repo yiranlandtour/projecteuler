@@ -401,7 +401,7 @@ fn main() {
     // println!("Numerator: {}, Denominator: {}", num, den);
     // println!("{:?}",util::euler1(1000));
 
-    println!("{:?}",euler::euler9_p(1000));
+    println!("{:?}",euler::euler10(2000000));
 }
 
 

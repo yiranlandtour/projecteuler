@@ -1,6 +1,8 @@
 use std::collections::{HashSet, VecDeque};
 extern crate rand;
 
+//is there a better way?
+/// 2,interesting , you can get 4 F(n-3) + F(n-6) for even-valued
 fn euler2_f(n:i64) -> i64{
     if n == 1{
         return 1;
@@ -47,6 +49,8 @@ pub fn euler2(n:i64)->i64{
     }
     return res;
 }
+
+
 //euler6
 pub fn euler6(n:i64)->i64{
     let mut res:i64 = 0;
@@ -247,4 +251,14 @@ pub fn euler9_p(n:i32){
     for i in 1..n+1{
         euler9(i);
     }
+}
+
+pub fn euler10(n:i64)->i64{
+    let mut res = 0;
+    for i in 2..n+1{
+        if is_prime(i){
+            res += i;
+        }
+    }
+    res
 }
