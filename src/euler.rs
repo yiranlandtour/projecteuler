@@ -1,6 +1,18 @@
 use std::collections::{HashSet, VecDeque};
 extern crate rand;
 
+extern crate num_bigint;
+extern crate num_traits;
+extern crate bit_set;
+
+
+use num::integer::Roots;
+use num_bigint::BigUint;
+use num_traits::{One, Pow};
+use bit_set::BitSet;
+
+
+const SEGMENT_SIZE: usize = 1_000_000;
 //is there a better way?
 /// 2,interesting , you can get 4 F(n-3) + F(n-6) for even-valued
 fn euler2_f(n:i64) -> i64{
@@ -260,5 +272,126 @@ pub fn euler10(n:i64)->i64{
             res += i;
         }
     }
+    res
+}
+
+pub fn euler16(n:u32)->u32{
+    let two = BigUint::from(2u32);
+    let big = two.pow(n);
+    println!("{:?}",big);
+    let s = big.to_string();
+    println!("{:?}",s);
+    s.chars().map(|c| c.to_digit(10).unwrap()).sum()
+}
+
+fn is_prime_216(num: u64, primes: &BitSet) -> bool {
+    if num < 2 {
+        return false;
+    }
+    primes.contains(num as usize)
+}
+
+fn generate_primes_216(limit: usize) -> BitSet {
+    let mut primes = BitSet::with_capacity(limit);
+    for i in 2..limit {
+        primes.insert(i);
+    }
+    let mut p = 2;
+    while p * p <= limit {
+        if primes.contains(p) {
+            let mut i = p * p;
+            while i < limit {
+                primes.remove(i);
+                i += p;
+            }
+            // println!("{:?}",primes);
+        }
+        p += 1;
+    }
+    primes
+}
+
+
+fn sieve(limit: usize) -> Vec<bool> {
+    let mut primes = vec![true; limit + 1];
+    primes[0] = false;
+    primes[1] = false;
+    let mut p = 2;
+    while p * p <= limit {
+        if primes[p] {
+            let mut i = p * p;
+            while i <= limit {
+                primes[i] = false;
+                i += p;
+            }
+        }
+        p += 1;
+    }
+    primes
+}
+fn is_prime_segmented_216p(n: usize, base_primes: &[bool]) -> bool {
+    let mut sieve = vec![true; SEGMENT_SIZE];
+    let limit = (SEGMENT_SIZE as f64).sqrt() as usize;
+
+    for p in 2..=limit {
+        if base_primes[p] {
+            let start = std::cmp::max(2, (n + p - 1) / p) * p - n;
+            let mut i = start;
+            while i < SEGMENT_SIZE {
+                sieve[i] = false;
+                i += p;
+            }
+        }
+    }
+
+    let t = n * n * 2 - 1;
+    sieve[t - n]
+}
+pub fn euler216(num:i64)->i32{
+    let limit = num;
+    // let sieve_limit = (limit as u64 * limit as u64 * 2) as usize;
+    let base_primes = sieve((num as f64).sqrt() as usize);
+    // let primes = generate_primes_216(sieve_limit);
+    let mut count = 0;
+
+    for n in 1..=limit {
+        if is_prime_segmented_216p(n as usize, &base_primes) {
+            count += 1;
+        }
+    }
+    count
+}
+
+fn amicable(a:i32)->i32{
+    let mut res = 1;
+    let mut b = 1;
+    for i in 2..a.sqrt(){
+        if a%i == 0{
+            b += i;
+            b += a/i;
+        }
+    }
+    if a == b{
+        return 0;
+    }
+    for i in 2..b.sqrt(){
+        if b%i == 0{
+            res += i;
+            res += b/i;
+        }
+    }
+    if res == a{
+        println!("{:?},{:?}",res,b);
+        res
+    }
+    else{
+        0
+    }
+}
+pub fn euler21(n:i32)->i32{
+    let mut res = 0;
+        for i in 4..n+1{
+            res += amicable(i);
+        }
     res
 }

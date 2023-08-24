@@ -7,6 +7,7 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 use rand::seq::SliceRandom;
 use rand::Rng;
+use std::time::{Duration, Instant};
 pub struct ListNode{
     pub val:i32,
     pub next:Option<Box<ListNode>>
@@ -222,6 +223,15 @@ fn max_points_on_circle(points: &[[i32; 2]]) -> usize {
 //     let eigenvalues = companion_matrix.eigenvalues();
 //     eigenvalues.into_iter().map(|c| c.re).collect()
 // }
+fn measure_time<F>(f: F) -> ((), Duration)
+where
+    F: FnOnce() -> ()
+{
+    let start = Instant::now();
+    f();
+    let elapsed = start.elapsed();
+    ((), elapsed)
+}
 
 fn main() {
     // let n = 10;
@@ -400,8 +410,11 @@ fn main() {
     // let (num, den) = util::float_to_fraction(x, epsilon);
     // println!("Numerator: {}, Denominator: {}", num, den);
     // println!("{:?}",util::euler1(1000));
-
-    println!("{:?}",euler::euler10(2000000));
+    let (result, elapsed) = measure_time(|| {
+        println!("{:?}",euler::euler21(10000));
+    });
+    println!("your_function() executed in: {:?}", elapsed);
+    
 }
 
 
