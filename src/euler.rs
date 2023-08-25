@@ -1,4 +1,4 @@
-use std::collections::{HashSet, VecDeque};
+use std::collections::{HashSet, VecDeque, HashMap};
 extern crate rand;
 
 extern crate num_bigint;
@@ -13,6 +13,7 @@ use bit_set::BitSet;
 use std::fs;
 
 const SEGMENT_SIZE: usize = 1_000_000;
+const MO:i64 = 1_000_000_007;
 //is there a better way?
 /// 2,interesting , you can get 4 F(n-3) + F(n-6) for even-valued
 fn euler2_f(n:i64) -> i64{
@@ -455,3 +456,89 @@ pub fn euler808(n:i64)->i64{
     }    res
 }
 
+fn f759(n:i64)->i64{
+    let mut i = n;
+    if i == 1{
+        return 1;
+    }
+    if i % 2 == 0{
+        return 2*f759(i/2);
+    }else{
+        let j = i/2;
+        return f759(j)/j + (2*f759(j)) + i;
+    }
+}
+fn s759(n:i64)->i64{
+    let mut res:i64 = 0;
+    for i in 1..n+1{
+        println!("{:?},{:?},{:?},{:?}",i,f759(i),f759(i)/i,format!("{:b}", i));
+        let num = f759(i)%MO;
+        res += num*num;
+    }
+    res%MO
+}
+fn f759_fast(n: i64) -> i64 {
+    let count_ones = (n as u64).count_ones() as i64;
+    (count_ones * n) % MO
+}
+
+fn s759_fast(n: i64) -> i64 {
+    let mut res: i64 = 0;
+    for i in 1..=n {
+        let num = f759_fast(i);
+        res = (res + (num * num)) % MO;
+    }
+    res % MO
+}
+
+pub fn euler759(n:i64)->i64{
+    s759_fast(n)
+}
+
+pub fn euler700()->i64{
+    let first: i128 = 1504170715041707;
+    let modone:i128 = 4503599627370517;
+    let mut res: i128 = 0;
+    let mut minnum = first;
+    for i in 2..modone {
+        let term = (first * i as i128) % modone;
+        if term < minnum {
+            minnum = term;
+            res += term;
+        }
+    }
+    res as i64
+}
+
+
+pub fn euler14(longth: i64) -> i64 {
+    let mut mid = HashMap::new();
+    let mut res = 0;
+    let mut maxcount = 0;
+
+    for a in 2..longth {
+        let mut i = a;
+        let mut count = 0;
+        while i != 1 && !mid.contains_key(&i) {
+            count += 1;
+            if i % 2 == 0 {
+                i = i / 2;
+            } else {
+                i = i * 3 + 1;
+            }
+        }
+
+        if let Some(value) = mid.get(&i) {
+            count += *value;
+        }
+
+        mid.insert(a, count);
+
+        if maxcount < count {
+            maxcount = count;
+            res = a;
+        }
+    }
+    // println!("{:?}",mid);
+    res
+}
