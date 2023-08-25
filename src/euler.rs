@@ -10,7 +10,7 @@ use num::integer::Roots;
 use num_bigint::BigUint;
 use num_traits::{One, Pow};
 use bit_set::BitSet;
-
+use std::fs;
 
 const SEGMENT_SIZE: usize = 1_000_000;
 //is there a better way?
@@ -74,7 +74,7 @@ pub fn euler6(n:i64)->i64{
     return res;
 }
 
-fn generate_primes(n: i32) -> Vec<i32> {
+fn generate_primes(n: i64) -> Vec<i64> {
     let mut is_prime = vec![true; n as usize];
     let mut primes = Vec::new();
 
@@ -92,7 +92,7 @@ fn generate_primes(n: i32) -> Vec<i32> {
     primes
 }
 
-pub fn euler5(n:i32)->i32{
+pub fn euler5(n:i64)->i64{
     let primes = generate_primes(n);
     println!("{:?}",primes);
     let mut product = primes.iter().product();
@@ -381,7 +381,7 @@ fn amicable(a:i32)->i32{
         }
     }
     if res == a{
-        println!("{:?},{:?}",res,b);
+        // println!("{:?},{:?}",res,b);
         res
     }
     else{
@@ -395,3 +395,63 @@ pub fn euler21(n:i32)->i32{
         }
     res
 }
+fn char_to_number(c: char) -> i32 {
+    (c.to_ascii_lowercase() as i32) - ('a' as i32) + 1
+}
+fn process_string(s: &str) -> Vec<String> {
+    s.split(',')
+        .map(|part| part.replace("\"", "").replace(" ", "").replace("\n", ""))
+        .map(|cleaned| cleaned.to_string())
+        .collect()
+}
+pub fn euler22() ->i32{
+
+    let content = fs::read_to_string("/Users/taoyiran/Desktop/pro/rust/hello/src/names.txt").expect("Failed to read the file");
+    
+    let mut names: Vec<String> = process_string(&content);
+    names.sort_unstable();
+    // println!("{:?}",names);
+    let mut res = 0;
+    let mut i = 1;
+    for n in &names {
+        let numbers: Vec<i32> = n.chars().map(|c| char_to_number(c)).collect();
+        let value:i32 = numbers.iter().filter(|&&x| x > 0).sum();
+
+        res += value * i;
+        i += 1;
+    }
+
+    res
+}
+
+fn reverse_number(n: i64) -> i64 {
+    let s: String = n.to_string();  // Convert the number to a string
+    let reversed_s: String = s.chars().rev().collect();  // Reverse the string
+    let reversed_n: i64 = reversed_s.parse().unwrap();  // Convert the reversed string back to a number
+    reversed_n
+}
+
+pub fn euler808(n:i64)->i64{
+    let mut res:i64 = 0;
+    let primes = generate_primes(100000000);
+    let mut reversible = HashSet::new();
+    for i in &primes{
+        let square:i64 = i * i;
+        let reverse:i64 = reverse_number(square);
+        if square != reverse{
+            let temp:i64 = reverse.sqrt();
+            if temp*temp == reverse && primes.contains(&temp) && !reversible.contains(&reverse){
+                reversible.insert(square);
+                reversible.insert(reverse);
+                // println!("{:?}",reversible);
+                // println!("{:?},{:?}",square,reverse);
+                res += square + reverse ;
+                if reversible.len() == n as usize{
+                    break;
+                }
+            }
+        }
+        
+    }    res
+}
+
