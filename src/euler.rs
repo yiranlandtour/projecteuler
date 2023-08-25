@@ -542,3 +542,61 @@ pub fn euler14(longth: i64) -> i64 {
     // println!("{:?}",mid);
     res
 }
+
+pub fn euler14_fast(longth: i64) -> i64 {
+    let mut mid = HashMap::new();
+    let mut res = 0;
+    let mut maxcount = 0;
+
+    for a in 2..longth {
+        let mut i = a;
+        let mut count = 0;
+        while i != 1 {
+            if let Some(&cached_count) = mid.get(&i) {
+                count += cached_count;
+                break;
+            }
+            count += 1;
+            i = if i % 2 == 0 { i / 2 } else { i * 3 + 1 };
+        }
+        
+        // use entry to make it fast
+        let total_count = mid.entry(a).or_insert(0);
+        *total_count = count;
+
+         
+        if maxcount < count {
+            maxcount = count;
+            res = a;
+        }
+    }
+    res
+}
+
+// what the fuck.without hash is faster
+pub fn euler14_withnohash(longth: i64) -> i64 {
+    let mut res = 0;
+    let mut maxcount = 0;
+
+    for a in 10000..longth {
+        let mut i = a;
+        let mut count = 0;
+        while i != 1 {
+            count += 1;
+            // i = if i % 2 == 0 { i / 2 } else { i * 3 + 1 };
+            // use bit the fatest
+            i = if i & 1 == 0 { i >> 1 } else { i * 3 + 1 };
+        }
+        
+
+        if maxcount < count {
+            maxcount = count;
+            res = a;
+        }
+    }
+    res
+}
+
+
+
+
