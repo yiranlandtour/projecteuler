@@ -4,6 +4,8 @@ extern crate rand;
 extern crate num_bigint;
 extern crate num_traits;
 extern crate bit_set;
+use std::collections::BinaryHeap;
+use std::cmp::Reverse;
 
 
 use num::integer::Roots;
@@ -608,6 +610,138 @@ pub fn euler13()->i64{
     }
     res
 }
+// fn backtrack31(a:Vec<i32>,target:i32)->Vec<i32>{
+//     let cointype = [100,50,20,10,5,2,1];
+//     if target == 0{
+//         return a.sort_unstable();
+//     }
+//     for i in cointype.iter(){
+//         if target - i >= 0{
+//             a.push(i);
+//             backtrack31(a,target-i);
+//         }
+//     }
+
+// }
+// pub fn euler31()->i32{
+//     let cointype = [100,50,20,10,5,2,1];
+//     let mut allcoins = HashSet::new();
+//     let mut res = 1;
+//     let mut coin = Vec::new();
+//     for i in &cointype{
+//         let mut target = 200;
+//         coin.push(&i);
+//         backtrack31(coin,200-i);
+//         coin.pop(&i);
+
+//     }
+
+//     allcoins.len()
+// }
+
+pub fn euler31_dp() -> i32 {
+    let cointypes = [1,2, 5, 10, 20, 50, 100];  // 可用的硬币种类
+    let mut dp = vec![0; 201];  // dp[i] 存储凑成 i 分的不同方式
+    dp[0] = 1;  
+
+    for &coin in cointypes.iter() {
+        for i in coin..=200 {
+            dp[i as usize] += dp[(i - coin) as usize];
+            println!("{:?},{:?}",i,dp[i]);
+        }
+    }
+    dp[200]+1
+}
+//too big to calculate
+fn dp78(n:i32)->i32{
+    if n == 1{
+        return 1;
+    }
+    if n == 2{
+        return 2;
+    }
+    let mut res = 0;
+    for i in 1..n/2+1{
+        res += 1;
+    }
+    res+dp78(n-1)
+}
+const MOD: i64 = 500500507;
+const LIMIT: usize = 500;
+
+fn mod_pow(mut base: i64, mut exp: i64, modulus: i64) -> i64 {
+    let mut result = 1;
+    base = base % modulus;
+    while exp > 0 {
+        if exp % 2 == 1 {
+            result = result * base % modulus;
+        }
+        exp = exp >> 1;
+        base = base * base % modulus
+    }
+    result
+}
+
+pub fn euler500() -> i64 {
+    let mut heap = BinaryHeap::new();
+    let mut num = 1;
+    let mut next_prime = 2;
+
+    for _ in 0..LIMIT {
+        heap.push(Reverse(next_prime));
+        next_prime += 1;
+        
+        while !is_prime(next_prime) {
+            next_prime += 1;
+        }
+    }
+    for i in 0..LIMIT {
+        let Reverse(smallest) = heap.pop().unwrap();
+        num = (num * mod_pow(smallest, 1, MOD)) % MOD;
+        println!("{:?},{:?},{:?}",i,smallest,num);
+        heap.push(Reverse((smallest as i64).pow(2)));
+    }
+
+    num
+}
+
+pub fn euler81()->i32{
+    let s = fs::read_to_string("source/0081_matrix.txt").expect("Failed to read the file");
+    let nums:Vec<_> = s.split('\n').collect();
+    let mut matrix: Vec<Vec<i32>> = Vec::new();
+
+    let mut dp: Vec<Vec<i32>> = vec![vec![0; 80]; 80];
+    for &a in nums.iter(){
+        let row:Vec<i32> = a.split(',')
+        .filter_map(|s| s.parse().ok())
+        .collect();
+    
+    if !row.is_empty() {
+        // println!("{:?}",row);
+        matrix.push(row);
+    }
+    }
+
+    for i in 0..dp.len(){
+        for j in 0..dp.len(){
+            if i == 0 && j == 0{
+                dp[i][j] = matrix[i][j];
+            }
+            else if i == 0{
+                dp[i][j] = dp[i][j-1] + matrix[i][j];
+            }
+            else if j == 0{
+                dp[i][j] = dp[i-1][j] + matrix[i][j];
+            }
+            else{
+                dp[i][j] = dp[i-1][j].min(dp[i][j-1]) + matrix[i][j];
+            }
+        }
+    }
+    dp[79][79]
+}
+    
+
 
 
 
