@@ -602,9 +602,8 @@ pub fn euler13()->i64{
     let nums:Vec<_> = s.split('\n').collect();
     let mut res:i64 = 0;
     for a in nums.iter(){
-        let num_str: String = a.chars().take(13).collect();
-        // println!("{:?}",num_str);
-        let num: i64 = num_str.parse().unwrap_or(0);        res += num;
+        let num_str: String = a.chars().take(11).collect();
+        let num: i64 = num_str.parse().unwrap_or(0);
         res += num;
     }
     res
