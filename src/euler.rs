@@ -407,7 +407,7 @@ fn process_string(s: &str) -> Vec<String> {
 }
 pub fn euler22() ->i32{
 
-    let content = fs::read_to_string("/Users/taoyiran/Desktop/pro/rust/hello/src/names.txt").expect("Failed to read the file");
+    let content = fs::read_to_string("source/names.txt").expect("Failed to read the file");
     
     let mut names: Vec<String> = process_string(&content);
     names.sort_unstable();
@@ -597,6 +597,18 @@ pub fn euler14_withnohash(longth: i64) -> i64 {
     res
 }
 
+pub fn euler13()->i64{
+    let s = fs::read_to_string("source/13.txt").expect("Failed to read the file");
+    let nums:Vec<_> = s.split('\n').collect();
+    let mut res:i64 = 0;
+    for a in nums.iter(){
+        let num_str: String = a.chars().take(13).collect();
+        // println!("{:?}",num_str);
+        let num: i64 = num_str.parse().unwrap_or(0);        res += num;
+        res += num;
+    }
+    res
+}
 
 
 

@@ -411,7 +411,7 @@ fn main() {
     // println!("Numerator: {}, Denominator: {}", num, den);
     // println!("{:?}",util::euler1(1000));
     let (result, elapsed) = measure_time(|| {
-        println!("{:?}",euler::euler14_withnohash(1000000));
+        println!("{:?}",euler::euler13());
     });
     println!("your_function() executed in: {:?}", elapsed);
     
