@@ -740,7 +740,65 @@ pub fn euler81()->i32{
     }
     dp[79][79]
 }
+
+pub fn euler20(n:i32)->i32{
+    let mut sumall = 0;
+    let mut res = vec![1];
+
+    for i in 2..n+1{
+        let mut carry = 0;
+        for num in res.iter_mut(){
+            let temp = *num* i  +carry;
+            *num = temp%10;
+            carry = temp/10;
+        }
+        while  carry > 0{
+            res.push(carry%10);
+            carry = carry/10;
+        }
+    }
+    for num in res.iter(){
+        sumall += num;
+    }
+    sumall
+}
     
+pub fn euler11() -> i32 {
+    let s = fs::read_to_string("source/11.txt").expect("Failed to read the file");
+    let matrix: Vec<Vec<i32>> = s
+        .lines()
+        .map(|line| {
+            line.split_whitespace()
+                .filter_map(|x| x.parse().ok())
+                .collect::<Vec<i32>>()
+        })
+        .collect();
+
+    let mut res = 0;
+
+    // Iterate through the matrix
+    let n: i32 = matrix.len() as i32;
+    let m: i32 = matrix[0].len() as i32;
+    for i in 0..n {
+        for j in 0..m {
+            // Compute products for all directions that are possible from (i, j)
+            let directions: [(i32, i32); 4] = [(0, 1), (1, 0), (1, 1), (1, -1)];
+            for (dx, dy) in directions.iter() {
+                if i as i32 + 3 * dx < n as i32 && i as i32 + 3 * dx >= 0 && j as i32 + 3 * dy < m as i32&& j as i32 + (3 * dy) >= 0 {
+                    let mut product = 1;
+                    for k in 0..4 {
+                        product *= matrix[(i + k * dx) as usize][(j + k  * dy ) as usize];
+                    }
+                    res = res.max(product);
+                }
+            }
+        }
+    }
+
+    res
+}
+    
+
 
 
 
