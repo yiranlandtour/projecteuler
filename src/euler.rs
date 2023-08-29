@@ -12,6 +12,7 @@ use num::integer::Roots;
 use num_bigint::BigUint;
 use num_traits::{One, Pow};
 use bit_set::BitSet;
+use rand::distributions::uniform::SampleBorrow;
 use std::fs;
 
 const SEGMENT_SIZE: usize = 1_000_000;
@@ -141,56 +142,6 @@ pub fn euler7(n:i32) -> i64{
     
     num
 }
-// pub fn euler8(n:usize)->i32{
-//     let s = "73167176531330624919225119674426574742355349194934
-//     96983520312774506326239578318016984801869478851843
-//     85861560789112949495459501737958331952853208805511
-//     12540698747158523863050715693290963295227443043557
-//     66896648950445244523161731856403098711121722383113
-//     62229893423380308135336276614282806444486645238749
-//     30358907296290491560440772390713810515859307960866
-//     70172427121883998797908792274921901699720888093776
-//     65727333001053367881220235421809751254540594752243
-//     52584907711670556013604839586446706324415722155397
-//     53697817977846174064955149290862569321978468622482
-//     83972241375657056057490261407972968652414535100474
-//     82166370484403199890008895243450658541227588666881
-//     16427171479924442928230863465674813919123162824586
-//     17866458359124566529476545682848912883142607690042
-//     24219022671055626321111109370544217506941658960408
-//     07198403850962455444362981230987879927244284909188
-//     84580156166097919133875499200524063689912560717606
-//     05886116467109405077541002256983155200055935729725
-//     71636269561882670428252483600823257530420752963450";
-//     let s = s.replace("\n", "").replace(" ", "");
-//     let mut res = i32::MIN;
-//     let mut temp = 1;
-//     let length = s.len();
-
-//     let mut qu = VecDeque::new();
-//     let mut i = 0;
-//     while i < length{
-//         let num = s[i].to_digit(10);
-//         if num == 0{
-//             qu.clear();
-//             temp = 1;
-//             i += 1;
-//             continue;
-
-//         }
-//         if qu.len() < n {
-//             qu.push_back(num);
-//             temp *= num;
-//             i += 1;
-//             continue;
-//         }
-//         res = res.max(temp);
-//         temp = temp*num/qu.pop_front();
-//         res = res.max(temp);
-//         i += 1;
-//     }
-//     res
-// }
 
 pub fn euler8(n: usize) -> i64 {
     let s = "73167176531330624919225119674426574742355349194934
@@ -799,7 +750,764 @@ pub fn euler11() -> i32 {
 }
     
 
+fn dp15(x:i32,y:i32)->i32{
+    if x == 0 || y == 0 {
+        return 1;
+    }
+    if x == 1&& y == 1{
+        return 2;
+    }
+
+    return dp15(x-1,y) + dp15(x,y-1);
+    
+}
 
 
+pub fn euler15(n:usize)->i64{
+    let mut dp:Vec<Vec<i64>> = vec![vec![1; n+1]; n+1];
+    for i in 1..n+1{
+        for j in 1..n+1{
+            dp[i][j] = dp[i-1][j] + dp[i][j-1];
+        }
+    }
+    dp[n][n]
 
+}
+
+pub fn euler18()->i32{
+    let s = fs::read_to_string("source/18.txt").expect("Failed to read the file");
+    let matrix: Vec<Vec<i32>> = s.lines()
+    .map(|line| {
+        line.split_whitespace()
+            .filter_map(|x| x.parse().ok())
+            .collect::<Vec<i32>>()
+    })
+    .collect();
+
+    let m = matrix.len();
+    let n = matrix[m-1].len();
+
+    let mut res: Vec<Vec<i32>> = vec![vec![0;n];m];
+    res[0][0] = matrix[0][0];
+    for i in 1..m{
+        for j in 0..i+1{
+            if j == 0{
+                res[i][j] = res[i-1][j] + matrix[i][j];
+            }else if j == i{
+                res[i][j] = res[i-1][j-1] + matrix[i][j];
+            }else{
+                res[i][j] = res[i-1][j].max(res[i-1][j-1]) + matrix[i][j];
+            }
+        }
+    }
+    *res.last().unwrap().iter().max().unwrap()
+}
+
+pub fn euler19()->i32{
+    let mut day_of_week = 1; // 1 Jan 1900 was a Monday
+    let mut sunday_count = 0;
+
+    day_of_week = 366%7;
+
+    println!("{:?}",day_of_week);
+    for year in 1901..=2000 {
+        for &month in &[31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31] {
+            if day_of_week == 0 {
+                sunday_count += 1;
+            }
+            day_of_week = (day_of_week + month) % 7;
+            if month == 28 && ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
+                day_of_week = (day_of_week + 1) % 7;
+            }
+        }
+    }
+    sunday_count
+}
+
+fn factorial(n: usize) -> usize {
+    (1..=n).product()
+}
+
+pub fn euler24() -> String {
+    let mut digits: Vec<char> = "0123456789".chars().collect();
+    let mut remaining = 1_000_000 - 1;  
+    let mut result: String = String::new();
+
+    for i in (1..10).rev() {
+        let f = factorial(i);
+        
+        let index = remaining / f;
+        remaining %= f;
+        result.push(digits.remove(index));
+    }
+    result.push(digits[0]);  
+
+    result
+}
+
+const MODULO: i64 = 10_000_000_000;  // 10^10
+
+pub fn euler48(n: i64) -> i64 {
+    let mut res = 0;
+    for i in 1..=n {
+        let mut term = 1;
+        for _ in 0..i {
+            term = (term * i) % MODULO;
+        }
+        res = (res + term) % MODULO;
+    }
+    res
+}
+
+pub fn euler30() -> i32 {
+    let mut total_sum = 0;
+    for num in 10..=354_294 {
+        let mut sum = 0;
+        let mut temp = num;
+        while temp > 0 {
+            let digit = temp % 10;
+            sum += digit.pow(5u32);
+            temp /= 10;
+        }
+        if sum == num {
+            total_sum += num;
+        }
+    }
+    total_sum
+}
+
+pub fn euler28(n: i32) -> i32 {
+    let mut sum = 1;  
+    let mut current = 1;
+
+    for step in 3..=n {
+        if step % 2 == 0 {
+            continue;
+        }
+        
+        for _ in 0..4 {
+            current += step - 1;
+            println!("{:?}",current);
+            sum += current;
+        }
+    }
+
+    sum
+}
+
+pub fn euler29b(a_limit: u32, b_limit: u32) -> usize {
+    let mut distinct_terms = HashSet::new();
+
+    for a in 2..=a_limit {
+        for b in 2..=b_limit {
+            let mut base = a;
+            let mut exponent = b;
+
+            let mut factor = 2;
+            while factor * factor <= base {
+                if base % factor == 0 {
+                    let mut count = 0;
+                    while base % factor == 0 {
+                        count += 1;
+                        base /= factor;
+                    }
+                    if base == 1{
+                        exponent *= count;
+                        base *= factor;
+                        // distinct_terms.insert((base,exponent));
+                        break;
+                    }
+
+                }
+                factor += 1;
+            }
+
+            let term = (base, exponent);
+            distinct_terms.insert(term);
+            // println!("{:?}",distinct_terms);
+        }
+    }
+
+    let mut vec: Vec<(u32, u32)> = distinct_terms.into_iter().collect();
+    vec.sort_by(|a, b| {
+        a.0.cmp(&b.0).then_with(|| a.1.cmp(&b.1))
+    });
+    println!("{:?}",vec);
+    vec.len()
+}
+
+pub fn euler29a(a_limit: u32, b_limit: u32) -> usize {
+    let mut distinct_terms = HashSet::new();
+
+    for a in 2..=a_limit {
+        for b in 2..=b_limit {
+            let mut base = a;
+            let mut term_factors = HashMap::new();
+
+            // Simplify the terms, e.g., 4^3 becomes 2^6
+            let mut factor = 2;
+            while factor * factor <= base {
+                if base % factor == 0 {
+                    let mut count = 0;
+                    while base % factor == 0 {
+                        count += 1;
+                        base /= factor;
+                    }
+                    term_factors.insert(factor, count * b);
+                }
+                factor += 1;
+            }
+
+            if base > 1 {
+                term_factors.insert(base, b);
+            }
+
+            let mut term_vec: Vec<(u32, u32)> = term_factors.into_iter().collect();
+            term_vec.sort();
+            
+            distinct_terms.insert(term_vec);
+        }
+    }
+    println!("{:?}",distinct_terms);
+    distinct_terms.len()
+}
+
+pub fn euler23()->i32{
+    let mut abundants = HashSet::new();
+    let abundantlimit = 28123;
+    let mut res = 0;
+
+    for num in 12..abundantlimit+1{
+        let mut temp = 1;
+        for i in 2..num.sqrt()+1{
+            if num%i == 0{
+                temp += i;
+                if i*i != num{
+                    temp += num/i;
+                }
+           }
+
+        }
+        if temp > num{
+            abundants.insert(num);
+        }
+    }
+    for i in 1..abundantlimit+1{
+        for (j, num) in abundants.iter().enumerate(){
+            if i > *num && abundants.contains(&(i - num))
+            {
+                break;
+            }
+            if j == abundants.len()-1{
+                res += i;
+            }
+    }
+}
+
+// Find numbers that can't be written as the sum of two abundant numbers
+// for i in 1..=abundantlimit {
+//     if !abundants
+//         .iter()
+//         .any(|&abundant| abundants.contains(&(i - abundant)))
+//     {
+//         res += i;
+//     }
+// }
+    // let mut a :Vec<i32> = abundants.into_iter().collect();
+    // a.sort();
+    // println!("{:?}",a);
+    res
+
+}
+
+pub fn euler67()->i32{
+    let s = fs::read_to_string("source/67.txt").expect("Failed to read the file");
+    let matrix: Vec<Vec<i32>> = s.lines()
+    .map(|line| {
+        line.split_whitespace()
+            .filter_map(|x| x.parse().ok())
+            .collect::<Vec<i32>>()
+    })
+    .collect();
+
+    let m = matrix.len();
+    let n = matrix[m-1].len();
+
+    let mut res: Vec<Vec<i32>> = vec![vec![0;n];m];
+    res[0][0] = matrix[0][0];
+    for i in 1..m{
+        for j in 0..i+1{
+            if j == 0{
+                res[i][j] = res[i-1][j] + matrix[i][j];
+            }else if j == i{
+                res[i][j] = res[i-1][j-1] + matrix[i][j];
+            }else{
+                res[i][j] = res[i-1][j].max(res[i-1][j-1]) + matrix[i][j];
+            }
+        }
+    }
+    *res.last().unwrap().iter().max().unwrap()
+}
+
+fn factorial34(n: u32) -> u32 {
+    if n == 0 {
+        1
+    } else {
+        (1..=n).product()
+    }
+}
+
+pub fn euler34() -> u32 {
+    let factorials: Vec<u32> = (0..=9).map(factorial34).collect();
+    let mut sum = 0;
+
+    // The upper bound is 7 * 9! = 2540160
+    for n in 10..factorial34(9) {
+        let mut temp = n;
+        let mut factorial_sum = 0;
+
+        while temp > 0 {
+            factorial_sum += factorials[(temp % 10) as usize];
+            temp /= 10;
+        }
+
+        if factorial_sum == n {
+            sum += n;
+            println!("{:?}",n);
+        }
+    }
+
+    sum
+}
+
+fn is_binary_palindrome(mut n: u32) -> bool {
+    let mut binary_str = String::new();
+
+    while n > 0 {
+        binary_str.push_str(&(n % 2).to_string());
+        n /= 2;
+    }
+
+    let reversed_str: String = binary_str.chars().rev().collect();
+    binary_str == reversed_str
+}
+pub fn euler36(limit: u32) -> u32 {
+    
+    let mut i = 1;
+    let mut res = 0;
+    while i < limit.sqrt() {  // 调整这个上限以生成更大或更小的回文数
+        let s = i.to_string();
+        let rs = s.chars().rev().collect::<String>();
+
+        // 构造奇数长度的回文数
+        let odd_palindrome: u32 = format!("{}{}", s, &rs[1..]).parse().unwrap();
+        if odd_palindrome < limit && is_binary_palindrome(odd_palindrome){
+            res += odd_palindrome;
+            println!("{:?},{:?}",i,odd_palindrome);
+        }
+        
+        // 构造偶数长度的回文数
+        let even_palindrome: u32 = format!("{}{}", s, rs).parse().unwrap();
+        if even_palindrome < limit && is_binary_palindrome(even_palindrome){
+            res += even_palindrome;
+            println!("{:?},{:?}",i,even_palindrome);
+        }
+        
+        i += 1;
+    }
+    res
+    // palindromes.sort();
+    // palindromes
+}
+
+fn is_palindrome(s: &str) -> bool {
+    let reversed: String = s.chars().rev().collect();
+    s == reversed
+}
+
+// pub fn euler36n(n:i32) {
+//     let mut palindromes: Vec<i32> = Vec::new();
+
+//     for i in 1..n {
+//         if is_palindrome(&i.to_string()) {
+//             palindromes.push(i);
+//         }
+//     }
+//     println!("Generated palindromes: {:?}", palindromes);
+// }
+pub fn euler50(n:i64)->i64{
+    let primes = generate_primes(n);
+    let mut sum = 0;
+    let mut res = 0;
+    let mut max_length = 0;
+
+    for start in 0..primes.len() {
+        let mut sum = 0;
+        for end in start..primes.len() {
+            sum += primes[end];
+            if sum > n {
+                break;
+            }
+            let length = end - start + 1;
+            if length > max_length && primes.contains(&sum) {
+                println!("{:?},{:?},{:?}",start,end,length);
+                max_length = length;
+                res = sum;
+            }
+        }
+    }
+    res
+}
+
+pub fn euler38()->i32{
+    let mut big = 10000;
+    let mut res = 0;
+    for i in 2..big{
+        let mut s = i.to_string();
+        let mut j = 2;
+        while s.len() < 9 && !s.contains('0'){
+            let mut one = i*j;
+            s.push_str(&one.to_string());
+            j+= 1;
+        }
+        if !s.contains('0') &&s.len() == 9 && s.chars().collect::<std::collections::HashSet<_>>().len() == s.len(){
+            
+            res = res.max(s.parse().unwrap());
+            // println!("{:?},{:?}",i,res);
+        }
+    }
+    res
+}
+pub fn euler38c() -> i32 {
+    let mut max_pandigital = 0;
+
+    for i in 1..10000 {
+        let mut s = String::new();
+        let mut j = 1;
+        while s.len() < 9 {
+            s.push_str(&(i * j).to_string());
+            j += 1;
+        }
+        if s.len() == 9 
+            && !s.contains('0') 
+            && s.chars().collect::<std::collections::HashSet<_>>().len() == 9 {
+            let num = s.parse::<i32>().unwrap();
+            max_pandigital = std::cmp::max(max_pandigital, num);
+        }
+    }
+    max_pandigital
+}
+fn sort_digits_of_number(number: i32) -> Vec<char> {
+    let mut digits: Vec<char> = number.to_string().chars().collect();
+    digits.sort();
+    digits
+    // sorted_number.parse::<i32>().unwrap()
+}
+
+pub fn euler52()->i32{
+    for i in 100000..200000{
+        let s = sort_digits_of_number(i);
+        // println!("{:?}",s);
+        for j in 2..7{
+            if s != sort_digits_of_number(i * j){
+                break;
+            }
+            if j == 6{
+                return i;
+            }
+        }
+        
+    }
+    0
+}
+
+fn sort_digits_of_numberc(number: i32) -> Vec<char> {
+    let mut digits: Vec<char> = number.to_string().chars().collect();
+    digits.sort();
+    digits
+}
+
+pub fn euler52c()->i32{
+    let mut x: i32 = 100000;
+    loop {
+        let x_digits = sort_digits_of_numberc(x);
+        if (2..=6).all(|n| sort_digits_of_numberc(n * x) == x_digits) {
+            return x;      
+        }
+        x += 1;
+    }
+    0
+}
+pub fn euler39(p:i32)->i32{
+    let mut res = HashMap::new();
+    for a in 1..p/3{
+        for b in a..p/2{
+            for c in b..p/2{
+                if a*a + (b*b) == c*c{
+                    *res.entry(a+b+c).or_insert(0) += 1;
+                    if a + b + c == 840{
+                        println!("{:?},{:?},{:?}",a,b,c);
+                    }
+                }
+            }
+        }
+    }
+    let max_key = res.into_iter().max_by_key(|&(_, v)| v).map(|(k, _)| k);
+    max_key.unwrap()
+}
+
+pub fn euler39c(p:i32) ->i32{
+    let mut count = HashMap::new();
+    let limit = p;
+
+    for a in 1..limit/3 {
+        for b in a..limit/2 {
+            let c = (a * a + b * b) as f64;
+            let c = c.sqrt();
+
+            if c == c.floor() {
+                let p = a + b + c as i32;
+                if p <= limit {
+                    *count.entry(p).or_insert(0) += 1;
+                }
+            }
+        }
+    }
+
+    let max_p = count.into_iter().max_by_key(|&(_, v)| v).map(|(k, _)| k);
+    max_p.unwrap()
+}
+
+pub fn euler32()->i32{
+    let mut res: HashSet<i32> = HashSet::new();
+
+    for i in 11..100{
+        for j in 100..1000{
+            let mut s = i.to_string();
+            s.push_str(&(j.to_string()));
+            s.push_str(&(i*j).to_string());
+            if !s.contains('0') && s.len() == 9 && s.chars().collect::<std::collections::HashSet<_>>().len() == s.len(){
+                println!("{:?}",s);
+                res.insert(i*j);
+            }
+        }
+    }
+    for i in 2..10{
+        for j in 1000..10000{
+            let mut s = i.to_string();
+            s.push_str(&(j.to_string()));
+            s.push_str(&(i*j).to_string());
+            if !s.contains('0') && s.len() == 9 && s.chars().collect::<std::collections::HashSet<_>>().len() == s.len(){
+                println!("{:?}",s);
+                res.insert(i*j);
+            }
+        }
+    }
+    res.iter().sum()
+}
+
+pub fn euler46()->i64{
+    let primes = generate_primes(1000000);
+    let mut i = 33;
+    while i < 100000000{
+        let mut res = true;
+        for prime in primes.iter(){
+            let mut temp =  i - prime;
+            // println!("{:?}",temp);
+            if temp < 0{
+                break;
+            }
+            temp = temp/2;
+            let temp2 = temp.sqrt();
+            if temp2*temp2 == temp{
+                res = false;
+                break;
+            }
+        }
+        if res{
+            return i;
+        }
+        i += 2;
+    }
+0
+}
+pub fn euler46c() -> i64 {
+    let mut n = 9;
+    loop {
+        // Check if n is a composite number
+        if !is_prime(n) {
+            let mut conjecture_holds = false;
+            let limit = ((n / 2) as f64).sqrt() as i64;
+            
+            // Check if the conjecture holds for this n
+            for s in 1..=limit {
+                let remainder = n - 2 * s * s;
+                if is_prime(remainder) {
+                    conjecture_holds = true;
+                    break;
+                }
+            }
+            
+            // If the conjecture doesn't hold, we've found our answer
+            if !conjecture_holds {
+                return n;
+            }
+        }
+            n += 2;
+    }
+}
+
+pub fn euler37()->i64{
+    let primes = generate_primes(1000000);
+    let mut res = Vec::new();
+    for &prime in primes.iter(){
+        if prime < 10{
+            continue;
+        }
+        // let mut num = prime;
+        let mut mult = 10;
+        while mult < prime{
+            if !is_prime(prime%mult) || !is_prime(prime/mult){
+                break;
+            }
+            mult = mult * 10;
+
+        }
+        if mult > prime{
+            res.push(prime);
+            if res.len()>12{
+                break;
+            }
+        }
+
+    }
+    println!("{:?}",res);
+    res.iter().sum()
+}
+
+pub fn euler42()->usize{
+    let mut triangle: Vec<i32> = Vec::new();
+    // let mut count: HashSet<i32> = HashSet::new();
+    let mut count = 0;
+    for i in 1..100{
+        triangle.push(i*(i+1)/2);
+    }
+    println!("{:?}",triangle);
+    let content = fs::read_to_string("source/42.txt").expect("Failed to read the file");
+    let names:Vec<String> = content.split(",").map(|part|part.replace("\"", "")).collect();
+
+    for name in names.iter(){
+        let num:Vec<i32> = name.chars().map(|x|char_to_number(x)).collect();
+        let value:i32 = num.iter().sum();
+        if triangle.contains(&value){
+            // count.insert(value);
+            count += 1;
+        }
+    }
+    count
+}
+
+fn triangle_number(n: u32) -> u32 {
+    n * (n + 1) / 2
+}
+
+// Convert a word to its word value
+fn word_value(word: &str) -> u32 {
+    word.chars().map(|ch| (ch as u32) - 64).sum()
+}
+
+// Check if a number is a triangle number
+fn is_triangle_number(num: u32) -> bool {
+    let mut n = 1;
+    let mut t = triangle_number(n);
+    while t < num {
+        n += 1;
+        t = triangle_number(n);
+    }
+    t == num
+}
+
+fn euler42c()->usize{
+    let data = fs::read_to_string("42.txt").expect("Unable to read file");
+    let words: Vec<&str> = data.split(',').map(|s| s.trim_matches('"')).collect();
+
+    let count = words.iter().filter(|&&word| is_triangle_number(word_value(word))).count();
+    count
+}
+
+pub fn euler44()->i32{
+    // let mut triangle: Vec<i32> = Vec::new();
+    let mut triangle: HashSet<i32> = HashSet::new();
+    let mut res = i32::MAX;
+    for i in 1..3000{
+        // triangle.push(i*(3*i-1)/2);
+        triangle.insert(i*(3*i-1)/2);
+    }
+    println!("{:?}",triangle);
+    // for i in 0..triangle.len(){
+    //     for j in i..triangle.len(){
+    //         if triangle.contains(&(triangle[j] + triangle[i])) && triangle.contains(&(triangle[j]-triangle[i])){
+    //             println!("{:?},{:?}",triangle[i],triangle[j]);
+    //             res = res.min(triangle[j]-triangle[i]);
+    //         }
+    //     }
+    // }
+    for i in 1..triangle.len(){
+        for j in i..triangle.len(){
+            let a: i32 = i as i32*(3*i as i32-1)/2;
+            let b:i32 = j as i32 *(3*j as i32-1)/2;
+            if triangle.contains(&(a+b)) && triangle.contains(&(b-a)){
+                 println!("{:?},{:?}",a,b);
+                res = res.min(b-a);
+            }
+        }
+    }
+    res
+
+}
+
+pub fn euler45()->i64{
+    let mut matrix: HashMap<i64, usize> = HashMap::new();
+    let mut n:i64 = 144;
+    loop{
+        let mut num = n*(n+1)/2;
+        let counter = matrix.entry(num).or_insert(0);
+        *counter += 1;
+        if *counter == 3{
+            return num;
+        }
+
+        let mut num = n*(3*n-1)/2;
+        let counter = matrix.entry(num).or_insert(0);
+        *counter += 1;
+        if *counter == 3{
+            return num;
+        }
+
+        let mut num = n*(2*n-1);
+        let counter = matrix.entry(num).or_insert(0);
+        *counter += 1;
+        if *counter == 3{
+            return num;
+        }
+        // println!("{:?}",matrix);
+        n += 1;
+    }
+}
+pub fn euler45_quick() -> i64 {
+    let mut pentagonals = HashSet::new();
+    let mut n = 144; // 因为题目要求 n > 143
+
+    loop {
+        let hexagonal = n * (2 * n - 1);
+        if !pentagonals.insert(hexagonal){
+            return hexagonal;
+        }
+        let pentagonal = n * (3 * n - 1) / 2;
+            if !pentagonals.insert(pentagonal){
+                return pentagonal;
+            }
+        n += 1;
+    }
+}
 
