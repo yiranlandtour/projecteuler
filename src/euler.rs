@@ -1,3 +1,4 @@
+use std::borrow::BorrowMut;
 use std::collections::{HashSet, VecDeque, HashMap};
 extern crate rand;
 
@@ -1510,4 +1511,307 @@ pub fn euler45_quick() -> i64 {
         n += 1;
     }
 }
+
+fn count_unique_prime_factors(mut n: i64) -> usize {
+    let mut count = 0;
+    let mut factor = 2;
+
+    while factor * factor <= n {
+        if n % factor == 0 {
+            count += 1; 
+            if count > 4{
+                return 0;
+            }
+            // 移除所有该因数
+            while n % factor == 0 {
+                n /= factor;
+            }
+        }
+        factor += 1;
+    }
+
+    if n > 1 {
+        count += 1;
+    }
+
+    count
+}
+
+pub fn euler47()->i64{
+    let mut num = 100;
+    let mut count = 1;
+    loop {
+        if count_unique_prime_factors(num) == 4 {
+            count += 1;
+            if count == 4 {
+                return num - 3;
+            }
+        } else {
+            count = 0;
+        }
+        num += 1;
+    }
+    num
+}
+fn check_same_digits(mut num1: i64, mut num2: i64) -> bool {
+    let mut digits1 = Vec::new();
+    let mut digits2 = Vec::new();
+
+    for _ in 0..4 {
+        digits1.push(num1 % 10);
+        num1 /= 10;
+        digits2.push(num2 % 10);
+        num2 /= 10;
+    }
+
+    digits1.sort();
+    digits2.sort();
+
+    digits1 == digits2
+}
+pub fn euler49()->String{
+    let primes = generate_primes(10000);
+
+    for prime in primes.iter(){
+        if *prime < 1488{
+            continue;
+        }
+        for num in primes.iter(){
+            if num <= prime || !check_same_digits(*prime,*num){
+                continue;
+            }
+            let mut temp = num + (num - prime);
+            if primes.contains(&temp) && check_same_digits(*prime,temp){
+                let mut s1 = prime.to_string();
+                let s2 = num.to_string();
+                let s3 = temp.to_string();
+                s1.push_str(&s2);
+                s1.push_str(&s3);
+                return s1;
+            }
+        }
+
+    }
+    "0".to_string()
+}
+
+fn check_onemillion(r:i32,n:i32)->bool{
+    let mut res:f64 = 1.0;
+    let minr = r.min(n-r);
+        for i in 1..minr+1{
+            res = res * (n+1-i) as f64 / i as f64;
+            if res > 1000000.0{
+                println!("{:?},{:?}",r,n);
+                return true;
+            }
+        }
+    
+    false
+}
+pub fn euler53(n:i32)->i32{
+    let mut sum = 0;
+    for i in 1..n+1{
+        for j in i..n+1{
+            if check_onemillion(i,j){
+                sum += n - j + 1;
+                println!("{:?}",sum);
+                break;
+            }
+        }
+    }
+    sum
+}
+
+pub fn euler62(n:i32)->i64{
+    let mut matrix:HashMap<String,Vec<i64>> = HashMap::new();
+    let mut i: i64 = 5;
+    loop{
+        let num = i.pow(3);
+        let mut chars: Vec<char> = num.to_string().chars().collect();
+        chars.sort();
+        let sorted_string: String = chars.into_iter().collect();
+        let vec = matrix.entry(sorted_string).or_insert_with(Vec::new);
+        vec.push(i);
+        if vec.len() == (n as usize) {
+            println!("{:?}",vec);
+            return vec[0].pow(3);
+            
+        }
+        i += 1;
+    }    
+}
+
+pub fn euler63() -> i32 {
+    let mut res = 9;
+    for i in 4i128..10i128 {
+        for j in 2..26 {
+            let num:i128 = i.pow(j as u32);
+            let s = num.to_string();
+            if s.len() < j as usize{
+                break;
+            }
+            if s.len() == j as usize {
+                // println!("{:?},{:?}",i,num);
+                res += 1;  
+            }
+        }
+    }
+    res
+}
+
+use std::f64;
+
+pub fn euler63c() -> i32 {
+    let mut count = 0;
+    for n in 1.. {
+        let mut found = false;
+        for x in 1..10 {
+            let num = (x as f64).powf(n as f64);
+            let num_digits = (n as f64 * (x as f64).log(10.0)).floor() as i32 + 1;
+            if num_digits == n {
+                println!("{:?},{:?},{:?}",x,n,num_digits);
+                found = true;
+                count += 1;
+            }
+        }
+        if !found {
+            break;
+        }
+    }
+    count
+}
+fn is_square(n: i128) -> bool {
+    let sqrt_n = (n as f64).sqrt() as i128;
+    sqrt_n * sqrt_n == n
+}
+
+
+pub fn euler66(n:i128)->i128{
+    let mut res = 0;
+    for i in 110..n+1{
+        if is_square(i){
+            continue;
+        }
+        for j in 1..{
+            let num = j*j*i + 1;
+            if is_square(num){
+                println!("{:?},{:?},{:?}",i,j,num.sqrt());
+                res = res.max(num.sqrt());
+                break;
+            }
+        }
+    }
+    res
+
+}
+
+use num_bigint::BigInt;
+use num_traits::Zero;
+use num_traits::ToPrimitive;
+
+pub fn euler66c(n: i64) -> i64 {
+    let mut max_x = BigInt::zero();
+    let mut max_d = 0;
+
+    for d in 2..=n {
+        let sqrtd = (d as f64).sqrt() as i64;
+        if sqrtd * sqrtd == d {
+            continue; // Skip perfect squares
+        }
+
+        let mut m = BigInt::zero();
+        let mut a = BigInt::from(sqrtd);
+        let mut num1 = BigInt::one();
+        let mut num2 = BigInt::from(a.clone());
+        let mut den1 = BigInt::one();
+        let mut den2 = BigInt::from(a.clone());
+
+        loop {
+            m = BigInt::from(d) - &m * &m;
+            m /= &den1;
+            a = BigInt::from((sqrtd + m.clone().to_i64().unwrap()) / den2.clone().to_i64().unwrap());
+            let num = &a * &num2 + &num1;
+            let den = &a * &den2 + &den1;
+
+            if &num * &num - BigInt::from(d) * &den * &den == BigInt::one() {
+                println!("{:?}",num);
+                if num > max_x {
+                    max_x = num.clone();
+                    max_d = d;
+                }
+                break;
+            }
+
+            num1 = num2.clone();
+            num2 = num.clone();
+            den1 = den2.clone();
+            den2 = den.clone();
+        }
+    }
+
+    max_d
+}
+
+pub fn euler69(n:i64)->i64{
+    let mut max_t:f64 = 1.0;
+    let mut i = 2;
+    let primes = generate_primes(n);
+    let mut res = 0;
+    while i <= n{
+        let mut yin:HashSet<i64> = HashSet::new();
+        let mut count = 1;
+        for p in &primes{
+            if i % p == 0{
+                yin.insert(*p);
+            }
+        }
+        for j in 2..i{
+            let mut t = true;
+            for y in &yin{
+                if j % y == 0{
+                    t = false;
+                    break;
+                }
+            }
+            if t == true{
+                count += 1;
+            }
+        }
+        let temp = i as f64 / count as f64 ;
+        if max_t < temp{
+            max_t = temp;
+            res = i;
+        }
+        println!("{:?},{:?},{:?}",i,count,temp);
+        i += 2;
+    }
+    res
+}
+pub fn euler69c(limit: i64) -> i64 {
+    let primes = generate_primes((limit as f64).sqrt() as i64 + 1); // Generate primes up to sqrt(limit)
+    let mut n = 1;
+    let mut i = 0;
+
+    while i < primes.len() {
+        let prime = primes[i];
+        println!("{:?}",n*prime);
+        if n * prime > limit {
+            break;
+        }
+        n *= prime;
+        i += 1;
+    }
+
+    n
+}
+
+
+
+
+
+
+
+
+
+
 
