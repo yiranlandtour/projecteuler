@@ -1754,7 +1754,7 @@ pub fn euler66c(n: i64) -> i64 {
 
 pub fn euler69(n:i64)->i64{
     let mut max_t:f64 = 1.0;
-    let mut i = 2;
+    let mut i = 1;
     let primes = generate_primes(n);
     let mut res = 0;
     while i <= n{
@@ -1782,6 +1782,7 @@ pub fn euler69(n:i64)->i64{
             max_t = temp;
             res = i;
         }
+        // if primes.contains(&i){}
         println!("{:?},{:?},{:?}",i,count,temp);
         i += 2;
     }
@@ -1804,12 +1805,318 @@ pub fn euler69c(limit: i64) -> i64 {
 
     n
 }
+extern crate itertools;
+use itertools::Itertools;
+fn generate_primes70(limit: usize) -> Vec<usize> {
+    let mut is_prime = vec![true; limit + 1];
+    let mut primes = Vec::new();
+    is_prime[0] = false;
+    is_prime[1] = false;
+    for num in 2..=limit {
+        if is_prime[num] {
+            primes.push(num);
+            let mut multiple = num * 2;
+            while multiple <= limit {
+                is_prime[multiple] = false;
+                multiple += num;
+            }
+        }
+    }
+    primes
+}
+fn is_permutation(a: usize, b: usize) -> bool {
+    // let mut digits_a = [0; 10];
+    // let mut digits_b = [0; 10];
+    // for digit in a.to_string().chars() {
+    //     digits_a[digit as usize - '0' as usize] += 1;
+    // }
+    // for digit in b.to_string().chars() {
+    //     digits_b[digit as usize - '0' as usize] += 1;
+    // }
+    // digits_a == digits_b
+    let mut chars: Vec<char> = a.to_string().chars().collect();
+    chars.sort();
+    let sorted_string1: String = chars.into_iter().collect();
+    let mut chars: Vec<char> = b.to_string().chars().collect();
+    chars.sort();
+    let sorted_string2: String = chars.into_iter().collect();
+    sorted_string1 == sorted_string2
+}
+
+pub fn euler70() -> usize {
+    let limit = (10f64.powf(7.0) as usize * 2).sqrt() as usize;
+    let primes = generate_primes70(limit);
+    let mut min_ratio = f64::MAX;
+    let mut result = 0;
+
+    for (p, q) in primes.iter().tuple_combinations() {
+        let n = p * q;
+        if n > 10_000_000 {
+            continue;
+        }
+        let phi = (p - 1) * (q - 1);
+        if is_permutation(n, phi) {
+            let ratio = n as f64 / phi as f64;
+            // println!("{:?},{:?},{:?},{:?}",n,q,p,phi);
+            if ratio < min_ratio {
+                println!("{:?},{:?},{:?},{:?}",n,q,p,ratio);
+                min_ratio = ratio;
+                result = n;
+            }
+        }
+    }
+    result
+}
+
+fn digital_sum(n: &BigUint) -> u32 {
+    let mut sum = 0;
+    for c in n.to_str_radix(10).chars() {
+        sum += c.to_digit(10).unwrap();
+    }
+    sum
+}
+
+pub fn euler56() ->u32{
+    let mut max_sum = 0;
+
+    for a in 1..100 {
+        for b in 1..100 {
+            let big_a: BigUint = BigUint::from(a as u32);
+            let big_result = big_a.pow(b as u32);
+            println!("{:?}",big_result.to_str_radix(10));
+            max_sum = max_sum.max(digital_sum(&big_result));
+        }
+    }
+    max_sum
+}
+
+pub fn euler71(n:i32,p:i32,limit:i32)->i32{
+    let target = n as f64 / p as f64;
+    let mut min_res = f64::MAX;
+    let mut res = 0;
+    for i in 8..limit{
+        for j in (1..=i/2).rev(){
+            // println!("{:?},{:?}",i,j);s
+            let temp = j as f64 / i as f64;
+            if temp >= target{
+                continue;
+            }
+            if target -temp < min_res{
+                // println!("{:?},{:?}",i,j);
+                min_res = target -temp;
+                res = j;
+                break;
+            }
+        }
+    }
+    res
+}
+
+fn gcd(a: i64, b: i64) -> i64 {
+    if b == 0 {
+        a
+    } else {
+        gcd(b, a % b)
+    }
+}
+pub fn euler71c(n:i64,p:i64,limit:i64)->i64{
+    let target = n as f64 / p as f64;
+
+    let mut closest_numerator = 0;
+    let mut closest_denominator = 1;
+    for i in 8..limit+1{
+        let mut num = i * n / p;
+        if num * p == i * n {
+            // Skip fractions equal to 3/7
+            num -= 1;
+        }
+        if gcd(num, i) == 1 {
+            if num * closest_denominator > i * closest_numerator {
+                closest_numerator = num;
+                closest_denominator = i;
+                println!("{:?},{:?}",closest_numerator,closest_denominator);
+            }
+        }
+    }
+    closest_numerator
+}
+pub fn euler82()->i32{
+    let s = fs::read_to_string("source/82.txt").expect("msg");
+    let matrix: Vec<Vec<i32>> = s.lines()
+    .map(|line| {
+        line.split(',')
+            .filter_map(|x| x.parse().ok())
+            .collect::<Vec<i32>>()
+    })
+    .collect();
+    // println!("{:?}",matrix);
+
+    let m = matrix.len();
+    let n = matrix[0].len();
+    let mut dp:Vec<Vec<i32>> = vec![vec![i32::MAX;n];m];
+    let mut res = i32::MAX;
+
+    for i in 0..m {
+        dp[i][0] = matrix[i][0];
+    }
+
+    for j in 1..n{
+        // for i in 0..m{
+        //     dp[i][j] = dp[i][j-1].min(dp[i-1][j]) + matrix[i][j];
+        // }
+        for i in 0..m {
+            dp[i][j] = min(dp[i][j], dp[i][j - 1] + matrix[i][j]);
+        }
+        
+        for i in 0..m {
+            if i > 0 {
+                dp[i][j] = min(dp[i][j], dp[i - 1][j] + matrix[i][j]);
+            }
+        }
+
+        for i in (0..m).rev() {
+            if i < m - 1 {
+                dp[i][j] = min(dp[i][j], dp[i + 1][j] + matrix[i][j]);
+            }
+        }
+
+    }
 
 
+    println!("{:?}",dp);
+    for i in 0..m{
+        res = res.min(dp[i][n-1]);
+    }
+    res
+}
+
+use std::cmp::min;
+
+    // Find the minimum value in the last column
+    // for &val in &dp.iter().map(|row| row[n - 1]).collect::<Vec<i32>>() {
+    //     res = min(res, val);
+    // }
 
 
+use std::cmp::Ordering;
+#[derive(Eq, PartialEq)]
+struct State {
+    cost: i32,
+    row: usize,
+    col: usize,
+}
 
+impl Ord for State {
+    fn cmp(&self, other: &Self) -> Ordering {
+        other.cost.cmp(&self.cost)
+    }
+}
 
+impl PartialOrd for State {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+pub fn euler83() -> i32 {
+    let s = fs::read_to_string("source/83.txt").expect("Unable to read file");
+    let matrix: Vec<Vec<i32>> = s.lines()
+        .map(|line| line.split(',')
+            .filter_map(|x| x.parse().ok())
+            .collect::<Vec<i32>>())
+        .collect();
+
+    let m = matrix.len();
+    let n = matrix[0].len();
+    let mut visited = HashSet::new();
+    let mut heap = BinaryHeap::new();
+
+    heap.push(State { cost: matrix[0][0], row: 0, col: 0 });
+
+    while let Some(State { cost, row, col }) = heap.pop() {
+        if row == m - 1 && col == n - 1 {
+            return cost;
+        }
+        if visited.contains(&(row, col)) {
+            continue;
+        }
+        visited.insert((row, col));
+
+        let directions = [(0, 1), (1, 0), (0, i32::MAX - 1), (i32::MAX - 1, 0)];
+        for &(dr, dc) in &directions {
+            let (new_row, new_col) = ((row as i32 + dr) as usize, (col as i32 + dc) as usize);
+            if new_row < m && new_col < n && !visited.contains(&(new_row, new_col)) {
+                heap.push(State { cost: cost + matrix[new_row][new_col], row: new_row, col: new_col });
+            }
+        }
+    }
+    0
+}
+
+fn count_rectangles(x: i64, y: i64) -> i64 {
+    (x * (x + 1) * y * (y + 1)) / 4
+}
+
+pub fn euler85(n:i64)->i64{
+    let mut resmin = i64::MAX;
+    let mut mincount = i64::MAX;
+    for i in 1..100{
+        for j in 1..100{
+            let count = count_rectangles(i, j);
+            if mincount > (count-n).abs(){
+                mincount = (count-n).abs();
+                resmin = i * j;
+                println!("{:?},{:?},{:?}",i,j,mincount);
+            }
+        }
+
+    }
+    resmin
+}
+fn is_perfect_square(n: i64) -> bool {
+    let root = (n as f64).sqrt() as i64;
+    root * root == n
+}
+
+fn count_combinations(a: i64, n: i64) -> i64 {
+    let mut count = 0;
+    for c in 1..=n / 2 {
+        let b = n - c;
+        if b >= c && b <= a {
+            count += 1;
+        }
+    }
+    count
+}
+pub fn euler86()->i64 {
+    let mut count = 0;
+    let mut m = 0;
+    let limit = 1_000_000;
+    while count <= limit {
+        m += 1;
+            // for b in 1..=m {
+                // for c in 1..=b {
+                //     let d_square = m * m + (b + c) * (b + c);
+                //     let d = (d_square as f64).sqrt();
+
+                //     if d.fract() == 0.0 {
+                //         // println!("{:?},{:?},{:?},{:?}",m,b,c,d);
+                //         count += 1;
+                //     }
+                // }
+
+                for bc_sum in 2..=m*2 {
+                    if is_perfect_square(m * m + bc_sum * bc_sum) {
+                        let countt = count_combinations(m,bc_sum);
+                    // println!("{:?},{:?},{:?}",m,bc_sum,countt);
+                        count = count + countt;
+                    }
+                // }
+            }
+            
+        }
+    m
+}
 
 
 
