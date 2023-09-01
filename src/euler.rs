@@ -2078,6 +2078,10 @@ fn is_perfect_square(n: i64) -> bool {
     root * root == n
 }
 
+fn is_perfect_squareu(n: u64) -> bool {
+    let root = (n as f64).sqrt() as u64;
+    root * root == n
+}
 fn count_combinations(a: i64, n: i64) -> i64 {
     let mut count = 0;
     for c in 1..=n / 2 {
@@ -2087,6 +2091,35 @@ fn count_combinations(a: i64, n: i64) -> i64 {
         }
     }
     count
+}
+//count every combinations
+fn count_combinationsc(a: i64, n: i64) -> i64 {
+    let min_b = (n as f64 / 2.0).ceil() as i64;
+    let max_b = min(a, n);
+    if max_b >= min_b {
+        if n > a{
+            return max_b - min_b + 1;
+        }
+        else{
+            return max_b - min_b;
+        }
+    } else {
+        return 0;
+    }
+}
+fn count_combinationsd(a: i64, n: i64) -> i64 {
+    let min_b = (n as f64 / 2.0).ceil() as i64;
+    if n > a{
+        if a >= min_b{
+            return a - min_b + 1;
+        }
+        0
+    }else{
+        if n >= min_b{
+            return n - min_b;
+        }
+        0
+    }
 }
 pub fn euler86()->i64 {
     let mut count = 0;
@@ -2107,18 +2140,287 @@ pub fn euler86()->i64 {
 
                 for bc_sum in 2..=m*2 {
                     if is_perfect_square(m * m + bc_sum * bc_sum) {
-                        let countt = count_combinations(m,bc_sum);
-                    // println!("{:?},{:?},{:?}",m,bc_sum,countt);
+                    let countt = count_combinationsd(m,bc_sum);
+                    
+                    // let counttc = count_combinationsc(m,bc_sum);
+                    // if countt != counttc{
+                        // println!("{:?},{:?},{:?}",m,bc_sum,countt);
+                        // println!("{:?},{:?},{:?}",m,bc_sum,countt);
+                    // }
                         count = count + countt;
                     }
-                // }
             }
             
         }
     m
 }
 
+pub fn euler87(n:i64)->usize{
+    let mut res: HashSet<i64> = HashSet::new();
+    let primes = generate_primes(n.sqrt());
+    for i in &primes{
+        for j in &primes{
+            for k in &primes{
+                let temp =i.pow(2u32) + j.pow(3u32) + k.pow(4u32);
+                if  temp< n{
+                    res.insert(temp);
+                }
+            }
+        }
+        
+    }
+    println!("{:?}",res);
+    res.len()
+}
+
+pub fn euler87c(n: i64) -> usize {
+    let mut res: HashSet<i64> = HashSet::new();
+    
+    let max_prime_2 = ((n - 2)as f64).powf(0.5).floor() as i64;
+    let max_prime_3 = ((n - 2)as f64).powf(1.0 / 3.0).floor() as i64;
+    let max_prime_4 = ((n - 2)as f64).powf(0.25).floor() as i64;
+    
+    let primes_2 = generate_primes(max_prime_2);
+    let primes_3 = generate_primes(max_prime_3);
+    let primes_4 = generate_primes(max_prime_4);
+    
+    for &i in &primes_2 {
+        let i2 = i.pow(2);
+        for &j in &primes_3 {
+            let j3 = j.pow(3);
+            if i2 + j3 >= n {
+                break;
+            }
+            for &k in &primes_4 {
+                let k4 = k.pow(4);
+                let temp = i2 + j3 + k4;
+                if temp >= n {
+                    break;
+                }
+                res.insert(temp);
+            }
+        }
+    }
+    res.len()
+}
+pub fn euler91(i:u32)->u32{
+    let mut res = 0;
+    //1 L 
+    res += i * i;
+
+    //2 bian L 
+    res += i * i * 2;
+
+    // ou shu 
+    res += i;
+
+    res
+}
+
+pub fn euler91c(n:i32) ->i32{
+    let mut count = 0;
+
+    for x1 in 0..=n {
+        for y1 in 0..=n {
+            for x2 in 0..=n {
+                for y2 in 0..=n {
+                    if x1 == x2 && y1 == y2{
+                        continue;
+                    }
+                    if (x1 == 0 && y2 == 0) || (x2 == 0 && y1 == 0) {
+                        continue;
+                    }
+                    if (x1 == 0 && y1 == 0) || (x2 == 0 && y2 == 0) {
+                        continue;
+                    }
+                    if (x1 * (x2 - x1) + y1 * (y2 - y1) == 0) || (x2 * (x2 - x1) + y2 * (y2 - y1) == 0) {
+                        // println!("{:?},{:?},{:?},{:?}",x1,y1,x2,y2);
+                        count += 1;
+                    }
+                }
+            }
+        }
+    }
+
+    count /= 2;
+    count += n * n;
+    count
+}
+
+pub fn euler92(n:u64)->u64{
+    let mut count = 0;
+    for mut j in 2..=n{
+        let mut num = 0;
+        let mut i = j;
+        // println!("i--{:?}",i);
+        while num != 1 && num!=89{
+            num = 0;
+            while i > 0{
+                num += (i%10).pow(2);
+                i = i / 10;
+            }
+            i = num;
+            // println!("{:?}",i);
+    }
+        if num == 89{
+            println!("{:?}",j);
+            count += 1;
+        }
+    }
+    count
+}
+
+fn sum_of_squares(mut n: i32) -> i32 {
+    let mut sum = 0;
+    while n > 0 {
+        let digit = n % 10;
+        sum += digit * digit;
+        n /= 10;
+    }
+    sum
+}
+
+    // for n in 1..limit {
+    //     let mut m = n;
+    //     while m > 10_000 {
+    //         m = sum_of_squares(m);
+    //     }
+
+    //     if cache[m as usize] == 89 {
+    //         count += 1;
+    //     }
+    // }
+
+use permutohedron::Heap;
+
+fn triangle_area(a: f64, b: f64, c: f64) -> Option<f64> {
+    let s = (a + b + c) / 2.0;
+    
+    let area_squared = s * (s - a) * (s - b) * (s - c);
+    
+    if area_squared < 0.0 {
+        return None;  // 这不是一个有效的三角形
+    }
+    
+    Some(area_squared.sqrt())
+}
+
+pub fn euler94(n:u64)->u64{
+    let mut y: u64 = 1;
+    let mut d: u64 = 2;
+    let mut sum: u64 = 0;
+    while 2*y + d < n{
+        for k in [0, 2].iter().take(10){
+        y = d + k - 1;
+        if y > d/2 && is_perfect_squareu(y*y - d*d/4){
+            sum += 2*y + d;
+            println!("{:?},{:?}",y,d);
+        }
+    }
+        d += 2;
+    }
+    sum
+
+}
+// fn zhiyinshuadd(n:u64)->u64{
+//     let mut sum = 1;
+//     for i in 2..n.sqrt(){
+//         if n % i == 0{
+//             sum += i;
+//             if i != n/i{
+//                 sum += n / i;
+//             }
+//         }
+//     }
+//     sum
+// }
+// pub fn euler95(n:u64)->u64{
+//     let mut all: HashSet<u64> = HashSet::new();
+//     let mut res = u64::MAX;
+//     let mut length = 0;
+//     for i in 2..n{
+//         let mut temphash: HashSet<u64> = HashSet::new();
+//         let mut num = i;
+//         while !temphash.contains(&num){
+//             temphash.insert(num);
+//             all.insert(num);
+//             num = zhiyinshuadd(num);
+//         }
+//         if temphash.len() > length{
+//             res = res.min(temphash.iter().min());
+//             length = temphash.len();
+//         }
+        
+
+//     }
+
+//     res
+// }
+
+fn zhiyinshuadd(n: u64, cache: &mut HashMap<u64, u64>) -> u64 {
+    if let Some(&sum) = cache.get(&n) {
+        return sum;
+    }
+    let sum: u64 = (1..=(n / 2)).filter(|&i| n % i == 0).sum();
+    cache.insert(n, sum);
+    sum
+}
 
 
+
+fn sum_of_divisors(n: u64) -> u64 {
+    let mut sum = 1;
+    let mut p = 2;
+    while p * p <= n {
+        if n % p == 0 {
+            sum += p;
+            if p * p != n {
+                sum += n / p;
+            }
+        }
+        p += 1;
+    }
+    sum
+}
+
+pub fn euler95d(limit: u64) -> u64 {
+    let mut min_member_of_longest_chain = 0;
+    let mut longest_chain_length = 0;
+    let mut cache: HashMap<u64, (u64, usize)> = HashMap::new(); // (first_member, length)
+
+    for i in 2..limit {
+        let mut num = i;
+        let mut chain = Vec::new();
+        let mut encountered = HashMap::new();
+
+        while num < limit && !cache.contains_key(&num) {
+            if let Some(&idx) = encountered.get(&num) {
+                let cycle_length = chain.len() - idx;
+                let first_member = *chain[idx..].iter().min().unwrap();
+                for (j, &x) in chain.iter().enumerate() {
+                    let len = if j >= idx { cycle_length } else { 0 };
+                    cache.insert(x, (first_member, len));
+                }
+                if cycle_length > longest_chain_length {
+                    longest_chain_length = cycle_length;
+                    min_member_of_longest_chain = first_member;
+                }
+                break;
+            }
+            encountered.insert(num, chain.len());
+            chain.push(num);
+            num = sum_of_divisors(num);
+        }
+
+        if cache.contains_key(&num) {
+            let (first_member, len) = cache[&num];
+            for (j, &x) in chain.iter().enumerate() {
+                let length = len + if len > 0 { chain.len() - j } else { 0 };
+                cache.insert(x, (first_member, length));
+            }
+        }
+    }
+    min_member_of_longest_chain
+}
 
 
