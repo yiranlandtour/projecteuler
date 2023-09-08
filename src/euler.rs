@@ -14,7 +14,7 @@ use num_bigint::BigUint;
 use num_traits::{One, Pow};
 use bit_set::BitSet;
 use rand::distributions::uniform::SampleBorrow;
-use std::fs;
+use std::{fs, string};
 
 const SEGMENT_SIZE: usize = 1_000_000;
 const MO:i64 = 1_000_000_007;
@@ -2368,7 +2368,7 @@ fn zhiyinshuadd(n: u64, cache: &mut HashMap<u64, u64>) -> u64 {
 
 
 
-fn sum_of_divisors(n: u64) -> u64 {
+pub fn sum_of_divisors(n: u64) -> u64 {
     let mut sum = 1;
     let mut p = 2;
     while p * p <= n {
@@ -2423,4 +2423,56 @@ pub fn euler95d(limit: u64) -> u64 {
     min_member_of_longest_chain
 }
 
+fn biguint_sqrt(n: &BigUint) -> BigUint {
+    let mut x0 = BigUint::zero();
+    let mut x1 = n.clone();
+    while &x0 != &x1 && &x0 + 1u32 != x1 {
+        x0 = x1.clone();
+        x1 = (&x0 + (n / &x0)) >> 1;
+    }
+    x1
+}
+
+// pub fn euler100()->String{
+//     let mut a = BigUint::from(10u128.pow(12));
+//     let two =     BigUint::from(2u128);
+
+//     loop{
+//         let b = &a + BigUint::one();
+//         let temp = &a * b / &two;
+//         let sqrt_n = biguint_sqrt(&temp);
+//         // println!("{:?}",sqrt_n.to_string());
+//         let sqrt_m = &sqrt_n + BigUint::one();
+//         if sqrt_n * &sqrt_m == temp{
+//             return sqrt_m.to_string();
+//         }
+//         a += BigUint::one(); 
+//     }
+    
+// }
+//It's hard
+pub fn euler100() {
+    let mut n = BigUint::from(10u64.pow(6));
+    let target = BigUint::from(10u64.pow(12));
+    let two = BigUint::from(2u64);
+    let one = BigUint::one();
+
+    while BigUint::from(&n * 2u64 - 1u64) <= target {
+        let n_squared = &n * &n;
+        let n_next_squared = (&n + &one) * (&n + &one);
+        let diff = n_next_squared - n_squared;
+        if diff > target {
+            break;
+        }
+
+        n += diff;
+        println!("{:?}",n.to_string());
+    }
+
+    println!("The number of blue discs is: {}", n);
+    let temp1 = &n + BigUint::one();
+    let temp1 = &temp1 * &n * two;
+    let temp = biguint_sqrt(&temp1);
+    println!("{:?}",temp.to_string());
+}
 

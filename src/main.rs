@@ -1,7 +1,8 @@
 
 mod util;
 mod euler;
-mod euler100200;
+mod euler101200;
+mod euler201300;
 extern crate rand;
 // extern crate image;
 use std::collections::HashMap;
@@ -412,7 +413,9 @@ fn main() {
     // println!("Numerator: {}, Denominator: {}", num, den);
     // println!("{:?}",util::euler1(1000));
     let (result, elapsed) = measure_time(|| {
-        println!("{:?}",euler::euler95d(1000000));
+        // println!("{:?}",euler::euler100());
+        // println!("{:?}",euler101200::euler104c());
+        println!("{:?}",euler201300::euler206());
     });
     println!("your_function() executed in: {:?}", elapsed);
     
