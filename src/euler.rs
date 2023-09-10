@@ -2476,3 +2476,43 @@ pub fn euler100() {
     println!("{:?}",temp.to_string());
 }
 
+extern crate rug;
+use rug::Float;
+
+fn digital_sum_of_sqrt(n: u32, precision: u32, digit_count: u32) -> u32 {
+    let sqrt_n = Float::with_val(precision, n).sqrt();
+    let sqrt_str = sqrt_n.to_string();
+    
+    let mut sum = 0;
+    let mut count = 0;
+    
+    for c in sqrt_str.chars() {
+        if c == '.' {
+            continue;
+        }
+        if count >= digit_count {
+            break;
+        }
+        sum += c.to_digit(10).unwrap();
+        count += 1;
+    }
+    
+    sum
+}
+
+pub fn euler80() {
+    let precision = 1000;
+    let digit_count = 100;
+    let mut total_sum = 0;
+
+    for n in 1..=100 {
+        let sqrt_floor = (n as f64).sqrt().floor() as u32;
+
+        if sqrt_floor * sqrt_floor != n {
+            total_sum += digital_sum_of_sqrt(n, precision, digit_count);
+        }
+    }
+
+    println!("Total sum of digital sums: {}", total_sum);
+}
+
