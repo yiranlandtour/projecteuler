@@ -2515,4 +2515,33 @@ pub fn euler80() {
 
     println!("Total sum of digital sums: {}", total_sum);
 }
+// fn search(k_max: usize, factors: Vec<usize>, product: usize, sum: usize, start: usize) -> HashSet<usize> {
+//     let mut results = HashSet::new();
+//     let k = product - sum + factors.len(); // Calculate the current k value
+    
+//     // If k is within the desired range, insert the product into the results
+//     if k <= k_max {
+//         if k >= 2 {
+//             results.insert(product);
+//         }
+//         // Limiting the recursion to not exceed k_max
+//         let next_max = k_max + factors.len() - k;
+//         for i in start..=next_max {
+//             // Recursively search for further factorizations
+//             let next_product = product * i;
+//             let next_sum = sum + i;
+//             let mut next_factors = factors.clone();
+//             next_factors.push(i);
+//             let subresults = search(k_max, next_factors, next_product, next_sum, i);
+//             results.extend(subresults);
+//         }
+//     }
+    
+//     results
+//     }
+
+pub fn euler88(k_max:usize){
+
+
+}
 
