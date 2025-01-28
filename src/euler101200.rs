@@ -1,5 +1,6 @@
 use std::{fs, string};
 
+mod tools;
 extern crate num_bigint;
 extern crate num_traits;
 
@@ -132,4 +133,39 @@ pub fn euler104c(){
         b = c;
         n += 1;
     }
+}
+
+
+pub fn euler112() -> u64{
+
+    let target_proportion = 0.99;
+    let mut bouncy_count = 0;
+    let mut total_count = 0;
+
+    for n in 1.. {
+        total_count += 1;
+        if is_bouncy(n) {
+            bouncy_count += 1;
+        }
+
+        let proportion = bouncy_count as f64 / total_count as f64;
+        if proportion >= target_proportion {
+            println!("The least number for which the proportion of bouncy numbers is exactly 99% is: {}", n);
+            return n;
+        }
+    }
+    return 0;
+}
+
+fn is_bouncy(n: u64) -> bool {
+    let digits: Vec<u8> = n.to_string().bytes().map(|b| b - b'0').collect();
+    //println!("{:?},{:?}",digits,digits.windows(2));
+    let increasing = digits.windows(2).all(|w| w[0] <= w[1]);
+    let decreasing = digits.windows(2).all(|w| w[0] >= w[1]);
+
+    !increasing && !decreasing
+}
+
+pub fn euler125() -> u64{
+    
 }

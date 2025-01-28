@@ -1,5 +1,5 @@
 
-mod util;
+// mod util;
 mod euler;
 mod euler101200;
 mod euler201300;
@@ -17,20 +17,20 @@ pub struct ListNode{
 
 
 
-fn generate_primes(nums: &Vec<i32>, index: usize, current_sum: i32, primes: &mut HashSet<i32>) {
-    if index == nums.len() {
-        if util::is_prime(current_sum) {
-            primes.insert(current_sum);
-        }
-        return;
-    }
+// fn generate_primes(nums: &Vec<i32>, index: usize, current_sum: i32, primes: &mut HashSet<i32>) {
+//     if index == nums.len() {
+//         if util::is_prime(current_sum) {
+//             primes.insert(current_sum);
+//         }
+//         return;
+//     }
 
-    // Try adding the current number
-    generate_primes(nums, index + 1, current_sum + nums[index], primes);
+//     // Try adding the current number
+//     generate_primes(nums, index + 1, current_sum + nums[index], primes);
 
-    // Try subtracting the current number
-    generate_primes(nums, index + 1, current_sum - nums[index], primes);
-}
+//     // Try subtracting the current number
+//     generate_primes(nums, index + 1, current_sum - nums[index], primes);
+// }
 //36进制的数
 fn to_base36(num: u32) -> String {
     let base36_chars: Vec<char> = "0123456789abcdefghijklmnopqrstuvwxyz".chars().collect();
@@ -413,8 +413,8 @@ fn main() {
     // println!("Numerator: {}, Denominator: {}", num, den);
     // println!("{:?}",util::euler1(1000));
     let (result, elapsed) = measure_time(|| {
-        println!("{:?}",euler::euler88(10));
-        // println!("{:?}",euler101200::euler104c());
+        // println!("{:?}",euler::euler88(10));
+        println!("{:?}",euler101200::euler112());
         // println!("{:?}",euler201300::euler206());
     });
     println!("your_function() executed in: {:?}", elapsed);
