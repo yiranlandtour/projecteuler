@@ -15,4 +15,5 @@ num-traits = "0.2"
 bit-set = "0.5.2"
 itertools = "0.10"
 permutohedron = "0.2.4"
+primal = "0.3.3"
 

@@ -16,6 +16,9 @@ use bit_set::BitSet;
 use rand::distributions::uniform::SampleBorrow;
 use std::{fs, string};
 
+use primal::Sieve;
+// use primal::is_prime;
+
 const SEGMENT_SIZE: usize = 1_000_000;
 const MO:i64 = 1_000_000_007;
 //is there a better way?
@@ -2546,3 +2549,90 @@ pub fn euler88(k_max:usize){
 
 }
 
+pub fn euler35(max: i32)->i32{
+    let sieve = Sieve::new(max as usize);
+    let mut count = 0;
+    let all_primes: Vec<usize> = sieve.primes_from(0).collect();
+
+    for &i in all_primes.iter(){
+        let mut num = i;
+        if i == 2 || i == 5 {
+            count += 1;
+            continue;
+        }
+        let s = i.to_string();
+        // 排除包含偶数或5的质数（除2和5外）
+        if s.chars().any(|c| matches!(c, '0' | '2' | '4' | '5' | '6' | '8')) {
+            continue;
+        }
+        let mut digits = num.to_string().chars().collect::<Vec<char>>();
+        if digits.contains(&'0'){
+            continue;
+        }
+        // println!("{:?}",digits);
+        let mut all_rotations_prime = true;
+        for _ in 0..digits.len() - 1{
+            digits.rotate_left(1);
+            // println!("{:?}",digits);
+            let new_num = digits.iter().collect::<String>().parse::<i32>().unwrap();
+            if !all_primes.contains(&(new_num as usize)){
+                all_rotations_prime = false;
+                break;
+            }
+
+        }
+        if all_rotations_prime{
+            println!("{:?}",num);
+            count += 1;
+        }
+    }
+    count
+   
+}
+pub fn euler35_1(max: usize)->i32{
+let limit = max;
+let sieve = Sieve::new(limit);
+let primes: HashSet<usize> = sieve.primes_from(0).take_while(|&p| p < limit).collect();
+
+let mut count = 0;
+
+for &p in &primes {
+    if p == 2 || p == 5 {
+        count += 1;
+        continue;
+    }
+    
+    let s = p.to_string();
+    // 排除包含偶数或5的质数（除2和5外）
+    if s.chars().any(|c| matches!(c, '0' | '2' | '4' | '5' | '6' | '8')) {
+        continue;
+    }
+    
+    let mut chars: Vec<char> = s.chars().collect();
+    let mut is_circular = true;
+    
+    // 检查所有旋转形式
+    for _ in 0..chars.len() {
+        chars.rotate_left(1);
+        let rotated_str: String = chars.iter().collect();
+        
+        // 检查前导零
+        if rotated_str.starts_with('0') {
+            is_circular = false;
+            break;
+        }
+        
+        let rotated_num: usize = rotated_str.parse().unwrap();
+        if !primes.contains(&rotated_num) {
+            is_circular = false;
+            break;
+        }
+    }
+    
+    if is_circular {
+        println!("{:?}",p);
+        count += 1;
+    }
+}
+count
+}

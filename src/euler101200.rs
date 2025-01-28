@@ -1,6 +1,6 @@
 use std::{fs, string};
 
-mod tools;
+// mod tools;
 extern crate num_bigint;
 extern crate num_traits;
 
@@ -166,6 +166,6 @@ fn is_bouncy(n: u64) -> bool {
     !increasing && !decreasing
 }
 
-pub fn euler125() -> u64{
+// pub fn euler125() -> u64{
     
-}
+// }

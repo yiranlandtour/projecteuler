@@ -413,8 +413,8 @@ fn main() {
     // println!("Numerator: {}, Denominator: {}", num, den);
     // println!("{:?}",util::euler1(1000));
     let (result, elapsed) = measure_time(|| {
-        // println!("{:?}",euler::euler88(10));
-        println!("{:?}",euler101200::euler112());
+        println!("{:?}",euler::euler35(1000000));
+        // println!("{:?}",euler101200::euler112());
         // println!("{:?}",euler201300::euler206());
     });
     println!("your_function() executed in: {:?}", elapsed);
