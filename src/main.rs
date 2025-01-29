@@ -3,6 +3,8 @@
 mod euler;
 mod euler101200;
 mod euler201300;
+mod tools;
+
 extern crate rand;
 // extern crate image;
 use std::collections::HashMap;
@@ -241,180 +243,14 @@ fn main() {
     // (0..n).for_each(|_| {b= a + b;a = b-a});
     // println!("{:?}",a);
     // for i in 20..10{
-    //     println!("{:?}",i);
-    // }
-    // let s = String::from("good");
-    // let s = "ass";
-    // for(i,v) in s.chars().enumerate(){
-    //         println!("{:?}",i);
-    //         println!("{:?}",v);
-    // }
 
-    // let mut stack = vec!['0'];
-    // let s = "(((}}{)){}";
-    // for c in s.chars() {
-    //     match c {
-    //         '(' | '[' | '{' => {stack.push(c)},
-    //         ')' => {if stack.pop().unwrap() != '(' {println!("aa") }},
-    //         ']' => {if stack.pop().unwrap() != '[' {println!("bb")}},
-    //         '}' => {if stack.pop().unwrap() != '{' {println!("cc")}},
-    //         _ => (),
-    //     }
-    // }
-    // stack.len() == 1
-    // let a = [1,3,5,9,10];
-    // let target = 9;
-    // b= a.binary_search(&4).unwrap_or_else(|x| x) as i32;
-    // println!("{:?}",b);
-    // let mut a = vec![];
-    // a.push(1);
-    // a.push(2);
-    // let b = [3,9];
-    // let mut bad = false;
-    // let mut bad2 = true;
-    // for reward in &a{
-    //     bad = bad || (*reward == b[0]);
-    // }
-    // if b.len() > 1 {
-    //     bad2 = false;
-    //     for reward in &a{
-    //         bad2 = bad2 || (*reward == b[1]);
-    //     }
-    // }
-    // bad = bad && bad2;
-    // if !bad{
-    //     println!("bad");
-    // }
-
-    // for c in &b{
-    //     a.push(*c);
-    // }
-    // if let Some(_) =  a.iter().position(|&x| x == 199){
-    // println!("asdf");
-    // }
-    // for i in 0..10{
-    //     println!("{:?}",i);
-    // }
-
-    // let num1 = "1232828191933";
-    // let num2 = "2342342342342";
-    // let res = multiply(num1.to_string(), num2.to_string());
-    
-    // let res = to_base36(72);
-    // let solutions = solve_n_queens(12);
-    // for (idx, solution) in solutions.iter().enumerate() {
-    //     println!("Solution {}:", idx + 1);
-    //     for row in solution {
-    //         println!("{}", row);
-    //     }
-    //     println!("");
-    // }
-    // let x = 100;
-    // let n = 3;
-    // let mut taken = Vec::new();
-    // let mut memo = HashMap::new();
-    // let (chance, best_candies) = best_chance(x, n, &mut taken, &mut memo);
-    // println!("The best survival chance for the first child is: {}", chance);
-    // println!("The first child should take {} candies for the best chance.", best_candies);
-
-    // let x = 100.0;
-    // println!("Cube root of {} is approximately {}", x, cube_root(x));
-
-    // if let Some((x, y, n)) = find_xyz(100000000) { // Here 10000 is an arbitrary limit for n.
-    //     println!("Found x = {}, y = {}, n = {}", x, y, n);
-    // } else {
-    //     println!("No solution found within the given limit.");
-    // }
-    // let points: [[i32; 2];7] = [[0, 0], [1, 0], [0, 1], [1, 1],[0,-1],[2,2],[3,4]];
-
-    // println!("Maximum number of points on a circle: {}", max_points_on_circle(&points));
-
-    // println!("{:?}",res);
-    // let nums = vec![2, 4, 51,1,2213,13,111,9];
-    // let mut primes = HashSet::new();
-
-    // generate_primes(&nums, 0, 0, &mut primes);
-
-    // let primes_vec: Vec<i32> = primes.into_iter().collect();
-    // println!("{:?}", primes_vec);
-
-    // let mut numbers = vec![151, 161, 52, 62, 51, 61];
-    // numbers.sort_by(custom_compare);
-    // println!("{:?}", numbers);
-
-    //随机的盒子复原
-    // let mut rng = rand::thread_rng();
-    // let mut n: usize = rng.gen_range(3..10); // 生成2到4的随机数
-    // n = 4;
-    // let mut nums: Vec<i32> = (1..(n*n)).map(|x| x as i32).collect();
-    // nums.push(0);
-    // nums.shuffle(&mut rng);
-
-    // println!("{:?}",nums);
-    // let mut board = vec![vec![]; n];
-    // for i in 0..n {
-    //     for _ in 0..n {
-    //         board[i].push(nums.pop().unwrap());
-    //     }
-    // }
-
-    // println!("Generated board:");
-    // for row in &board {
-    //     println!("{:?}", row);
-    // }
-
-    // let result = util::sliding_puzzle_rand(board);
-    // println!("\nSteps to solve:");
-    // for step in result {
-    //     for row in &step {
-    //         println!("{:?}", row);
-    //     }
-    //     println!("------");
-    // }
-
-    // let mut nums = vec![5, 10,5];
-    // let target = 10;
-    // match util::find_expression(&mut nums, target, "".to_string())  {
-    //     Some(expr) => println!("{}", expr),
-    //     None => println!("No valid expression found"),
-    // }
-
-    // let pattern = "abcd+aa=bcbb";
-    // let replaced_pattern = pattern.replace(" ", "");
-    // if let Some(mapping) = util::find_valid_mapping(&replaced_pattern) {
-    //     for (ch, val) in mapping.iter() {
-    //         println!("{} -> {}", ch, val);
-    //     }
-    // } else {
-    //     println!("No valid mapping found!");
-    // }
-
-    // util::simulate_interaction2();
-
-    // let path = "path_to_your_image.jpg"; // 更改为您的图片路径
-    // let ascii_image = util::image_to_ascii(path);
-    // for row in ascii_image {
-    //     let line: String = row.iter().collect();
-    //     println!("{}", line);
-    // }
-
-    // let nums = vec![1, -1, 2, -2,9,13,-7,3,-15];
-    // let target = 0;
-    // let result = util::sum_combinations(nums, target);
-    // for combination in &result {
-    //     println!("{:?}", combination);
-    // }
-
-    // util::rand_go();
-
-    // let x = 0.2857;
     // let epsilon = 0.001;
     // let (num, den) = util::float_to_fraction(x, epsilon);
     // println!("Numerator: {}, Denominator: {}", num, den);
     // println!("{:?}",util::euler1(1000));
     let (result, elapsed) = measure_time(|| {
-        println!("{:?}",euler::euler35(1000000));
-        // println!("{:?}",euler101200::euler112());
+        // println!("{:?}",euler::euler35(1000000));
+        println!("{:?}",euler101200::euler109_c());
         // println!("{:?}",euler201300::euler206());
     });
     println!("your_function() executed in: {:?}", elapsed);

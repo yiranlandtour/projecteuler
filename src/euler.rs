@@ -2561,7 +2561,7 @@ pub fn euler35(max: i32)->i32{
             continue;
         }
         let s = i.to_string();
-        // 排除包含偶数或5的质数（除2和5外）
+
         if s.chars().any(|c| matches!(c, '0' | '2' | '4' | '5' | '6' | '8')) {
             continue;
         }
@@ -2603,7 +2603,7 @@ for &p in &primes {
     }
     
     let s = p.to_string();
-    // 排除包含偶数或5的质数（除2和5外）
+
     if s.chars().any(|c| matches!(c, '0' | '2' | '4' | '5' | '6' | '8')) {
         continue;
     }
@@ -2611,12 +2611,12 @@ for &p in &primes {
     let mut chars: Vec<char> = s.chars().collect();
     let mut is_circular = true;
     
-    // 检查所有旋转形式
+
     for _ in 0..chars.len() {
         chars.rotate_left(1);
         let rotated_str: String = chars.iter().collect();
         
-        // 检查前导零
+
         if rotated_str.starts_with('0') {
             is_circular = false;
             break;

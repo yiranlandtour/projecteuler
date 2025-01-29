@@ -1,15 +1,17 @@
 use std::{fs, string};
 
-// mod tools;
 extern crate num_bigint;
 extern crate num_traits;
 
-use num_bigint::BigUint;
+
+
+use num_bigint::{BigInt,BigUint};
 use num_traits::{One, Zero};
-use std::collections::HashSet;
+use std::collections::{HashSet,HashMap};
     // let a = crate::euler::sum_of_divisors(123);
     // println!("sum of divisors of 123 is {}", a);
 
+use crate::tools::{sum_digits,sum_digits_bignum}; 
 
 fn triangle_area(a:f32,b:f32,c:f32)->f32{
     let s = (a+b+c)/2.0;
@@ -169,3 +171,142 @@ fn is_bouncy(n: u64) -> bool {
 // pub fn euler125() -> u64{
     
 // }
+
+pub fn euler109_b() -> i32 {
+    let mut count = 10;
+    let mut start = BigInt::from(614656);
+    while count < 30 {
+        start += BigInt::one();
+        let he = sum_digits_bignum(&start); 
+        
+        let mut temp = start.clone(); 
+        
+        if he == 1 {
+            continue;
+        }
+        while temp > BigInt::one() {
+            // println!("{:?}.{:?}",temp,he);
+            if &temp % &he == BigInt::zero() {
+                temp /= he; 
+            } else {
+                break;
+            }
+        }
+        
+        if temp == BigInt::one() {
+            println!("{:?}", start); 
+            count += 1;
+        }
+    }
+    
+    count
+}
+
+pub fn euler109() -> i32 {
+    let mut count = 0;
+    let mut start:u64 = 80;
+    let mut h:HashMap<u64,HashSet<u64>> = HashMap::new();
+
+    for i in 11..99{
+        let mut num = i;
+        h.entry(i).or_insert_with(HashSet::new);
+        for j in 3..10{
+            num = num * i;
+            if let Some(set) = h.get_mut(&i) {
+                set.insert(num);
+            }
+        }
+    }
+    while count < 30 {
+        start += 1;
+        if (start % 10 == 9) || (start % 10 == 0) || (start % 10 == 7){
+            continue;
+        }
+        let he = sum_digits(start); 
+        
+        let mut temp = start.clone(); 
+        
+        if he == 1 {
+            continue;
+        }
+        if let Some(set1) = h.get(&he) { // 使用 h.get 而不是 h.get_mut
+            while temp > 1 {
+                if set1.contains(&temp) {
+                    println!("{:?},{:?}", start, he);
+                    count += 1;
+                    break;
+                }
+                if temp % he == 0 {
+                    temp /= he;
+                } else {
+                    break;
+                }
+            }
+
+            if temp == 1 {
+                println!("{:?},{:?}", start, he);
+                count += 1;
+            }
+        }
+    }
+    
+    count
+}
+
+use std::collections::BTreeSet;
+
+fn digit_sum(num: &BigUint) -> u64 {
+    let mut sum = 0u64;
+    let mut n = num.clone();
+    let ten = BigUint::from(10u64);
+    while !n.is_zero() {
+        let digit = &n % &ten;
+        sum += digit.to_u64_digits().get(0).copied().unwrap_or(0);
+        n = n / &ten;
+    }
+    sum
+}
+
+fn number_of_digits(num: &BigUint) -> usize {
+    let mut count = 0;
+    let mut n = num.clone();
+    let ten = BigUint::from(10u64);
+    while !n.is_zero() {
+        count += 1;
+        n = n / &ten;
+    }
+    count
+}
+
+pub fn euler109_c() -> BigUint{
+    let mut candidates = BTreeSet::new();
+    // 增大k的范围以确保足够的候选数
+    for k in 2..=50 {
+        let mut s = 2u64;
+        loop {
+            let num = BigUint::from(s).pow(k);
+            if num < BigUint::from(10u64) {
+                s += 1;
+                continue;
+            }
+            let sum = digit_sum(&num);
+            if sum == s {
+                candidates.insert(num.clone());
+            }
+            let digits = number_of_digits(&num);
+            if 9 * digits < s as usize {
+                break;
+            }
+            s += 1;
+        }
+    }
+    let sorted: Vec<_> = candidates.into_iter().collect();
+    // 确保有足够的候选数
+    if sorted.len() >= 30 {
+        println!("a_30 = {}", sorted[29]);
+        return sorted[29].clone();;
+    } else {
+        println!("Found only {} candidates. Try increasing the k range.", sorted.len());
+        return sorted[0].clone();;
+    }
+}
